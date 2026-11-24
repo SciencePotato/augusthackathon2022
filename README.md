@@ -13,3 +13,14 @@ Our website is open to anyone who is curious to learn. **Everyone** should be ab
 
 ## Design 
 Our website will first ask the user to sign up for an account that will be used to identify themselves in the webiste. After sign in, the user will be taken to the home page where there will be recommendations offered by the system. The user can then pick where he want to go next. The user can either choose to go to the his personal profile page or the user can select the topic that interst him the most and start reading. 
+
+## Home auth lifecycle regression
+
+From the repository root:
+
+```sh
+npm install --package-lock=false --ignore-scripts
+node --test tests/home-auth-lifecycle.test.cjs
+```
+
+The local test substitutes Firebase and checks that leaving Home releases its auth listener. It does not connect to Firebase or change the placeholder authentication UI. The installation command leaves the existing lockfile untouched; `npm ci` currently fails because its `fsevents` entry is incomplete.
