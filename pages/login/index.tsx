@@ -14,15 +14,12 @@ const Login: NextPage = () => {
 
     const qz_auth = getAuth();
 
-    let btnSignIn = document.getElementById('btnSignIn');
     let TextEmail = document.getElementById('txtEmail') as HTMLInputElement;
     let TextPassword = document.getElementById('txtPassword') as HTMLInputElement;
     
     var email = TextEmail?.value;
     var password = TextPassword?.value;
     
-    btnSignIn?.addEventListener('click', function handleClick(event) {
-      console.log('button clicked');
       signInWithEmailAndPassword(qz_auth, email, password)
       .then((userCredential) => {
         // Signed in 
@@ -36,7 +33,6 @@ const Login: NextPage = () => {
         console.log("failed to", errorCode, errorMessage);
       });
     
-    });
     }
   return (
     <div>
