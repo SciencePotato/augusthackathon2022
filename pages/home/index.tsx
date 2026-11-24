@@ -152,7 +152,7 @@ const Home: NextPage = () => {
   const getUser = ()=>{
     const app = initializeApp(config.firebaseConfig);
     const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
+    return onAuthStateChanged(auth, (user) => {
     if (user) {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/firebase.User
@@ -167,7 +167,7 @@ const Home: NextPage = () => {
   });
   }
   useEffect(() => {
-    getUser();
+    return getUser();
   }, [])
   return (
     <>
