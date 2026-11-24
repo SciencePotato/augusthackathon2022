@@ -17,6 +17,7 @@ const SignUp: NextPage = () => {
     if (isSubmitting) return;
     setError(null);
     setIsSubmitting(true);
+    let accountCreated = false;
     try {
     const app = initializeApp(config.firebaseConfig);
     const qz_auth = getAuth(app);
@@ -29,9 +30,12 @@ const SignUp: NextPage = () => {
     var password = TextPassword?.value;
 
     await createUserWithEmailAndPassword(qz_auth, email, password);
-    await router.push('/home');
+    accountCreated = true;
+    if (await router.push('/home') === false) throw new Error("Navigation canceled");
     } catch {
-      setError("Unable to create your account. Please check your details and try again.");
+      setError(accountCreated
+        ? "Your account was created, but we couldn't open Home. Please sign in to continue."
+        : "Unable to create your account. Please check your details and try again.");
     } finally {
       setIsSubmitting(false);
     }

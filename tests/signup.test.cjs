@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 const { test } = require("node:test");
 const ts = require("typescript");
 
-function signupPage(register) {
+function signupPage(register, navigationResult) {
   const exports = {}, state = [], pushes = [];
   let hook = 0;
   const jsx = (type, props) => ({ type, props });
@@ -20,7 +20,11 @@ function signupPage(register) {
         const i = hook++; if (!(i in state)) state[i] = initial;
         return [state[i], value => state[i] = value];
       }};
-      if (name === "next/router") return { useRouter: () => ({ push: path => pushes.push(path) }) };
+      if (name === "next/router") return { useRouter: () => ({ push: path => {
+        pushes.push(path);
+        if (navigationResult instanceof Error) return Promise.reject(navigationResult);
+        return navigationResult ?? true;
+      } }) };
       if (name === "firebase/app") return { initializeApp: () => ({}) };
       if (name === "firebase/auth") return { getAuth: () => ({}), createUserWithEmailAndPassword: register };
       if (name.endsWith("component/database/config")) return { config: { firebaseConfig: {} } };
@@ -55,4 +59,14 @@ test("signup navigates only after successful account creation and disables dupli
   resolve({ user: { uid: "synthetic" } });
   await pending;
   assert.deepEqual(page.pushes, ["/home"]);
+});
+
+test("a failed or cancelled navigation does not falsely report that account creation failed", async () => {
+  for (const result of [new Error("navigation failed"), false]) {
+    const page = signupPage(async () => ({ user: { uid: "synthetic" } }), result);
+    await page.submit({ preventDefault() {} });
+    const error = page.all(page.render(), n => n.props?.role === "alert")[0];
+    assert.match(error.props.children, /account was created/);
+    assert.equal(page.all(page.render(), n => n.props?.id === "btnSignUp")[0].props.disabled, false);
+  }
 });
