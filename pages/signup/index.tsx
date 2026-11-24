@@ -5,9 +5,20 @@ import scss from '../../styles/SignUp.module.scss';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import {config} from './../../component/database/config';
+import { useState, type FormEvent } from 'react';
+import { useRouter } from 'next/router';
 
 const SignUp: NextPage = () => {
-  const signup = ()=>{
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const signup = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isSubmitting) return;
+    setError(null);
+    setIsSubmitting(true);
+    let accountCreated = false;
+    try {
     const app = initializeApp(config.firebaseConfig);
     const qz_auth = getAuth(app);
 
@@ -18,19 +29,16 @@ const SignUp: NextPage = () => {
     var email = TextEmail?.value;
     var password = TextPassword?.value;
 
-    createUserWithEmailAndPassword(qz_auth, email, password)
-    .then((userCredential) => {
-      // Signed in 
-      const user = userCredential.user;
-      console.log("successful");
-      // ...
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ..
-      console.log("failed to", errorCode, errorMessage);
-    });
+    await createUserWithEmailAndPassword(qz_auth, email, password);
+    accountCreated = true;
+    if (await router.push('/home') === false) throw new Error("Navigation canceled");
+    } catch {
+      setError(accountCreated
+        ? "Your account was created, but we couldn't open Home. Please sign in to continue."
+        : "Unable to create your account. Please check your details and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
   return (
     <div>
@@ -42,28 +50,27 @@ const SignUp: NextPage = () => {
 
       <section className={scss.SignUp}>
         <h1> Sign Up </h1>
-        <div>
+        <form onSubmit={signup}>
           <div>
             <div>
-              <input type="text" placeholder='Email' id="txtEmail"/>
-              <input type="password" placeholder='Password' id="txtPassword"/>
+              <input type="email" placeholder='Email' id="txtEmail" required/>
+              <input type="password" placeholder='Password' id="txtPassword" required/>
             </div>
           </div>
           <div>
             <div>
               <div>
-                <Link href={"/home"}> 
-                  <button id="btnSignUp" onClick={signup}>
-                    Sign Up
+                {error && <p role="alert">{error}</p>}
+                  <button id="btnSignUp" type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "Signing up..." : "Sign Up"}
                   </button>
-                </Link>
                 <p>
                   <Link href={"/login"}> Have an account? Login now!</Link>
                 </p>
               </div>
             </div>
           </div>
-        </div>
+        </form>
       </section>
     </div>
   )
