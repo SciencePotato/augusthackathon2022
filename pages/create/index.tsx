@@ -20,18 +20,18 @@ const Create: NextPage = () => {
         <section>
           <div>
             <div>
-              <label htmlFor="">Title </label>
-              <textarea name="" id="" cols={30} rows={10}></textarea>
+              <label htmlFor="question-title">Title </label>
+              <textarea name="" id="question-title" cols={30} rows={10}></textarea>
             </div>
 
             <div>
-              <label htmlFor="">Description </label>
-              <textarea name="" id="" cols={30} rows={10}></textarea>
+              <label htmlFor="question-description">Description </label>
+              <textarea name="" id="question-description" cols={30} rows={10}></textarea>
             </div>
 
             <div>
-              <label htmlFor="">Tabs</label>
-              <textarea name="" id="" cols={30} rows={10}></textarea>
+              <label htmlFor="question-tabs">Tabs</label>
+              <textarea name="" id="question-tabs" cols={30} rows={10}></textarea>
             </div>
           </div>
           <div>

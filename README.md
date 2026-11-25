@@ -1,4 +1,16 @@
 # InfoShare
+
+## Question field regression check
+
+After installing the existing project dependencies:
+
+```bash
+node --test tests/compose-labels.test.cjs
+```
+
+This executes the question-page JSX and checks the three native textarea/label
+associations. It does not implement or test the unfinished submission backend.
+
 ![Github 101](https://user-images.githubusercontent.com/88296782/184467289-7b7b0f3e-cba6-46da-8344-ad645e62da8a.png)
 
 ## Design and the Website
